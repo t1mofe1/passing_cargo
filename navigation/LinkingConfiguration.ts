@@ -1,36 +1,20 @@
-/**
- * Learn more about deep linking with React Navigation
- * https://reactnavigation.org/docs/deep-linking
- * https://reactnavigation.org/docs/configuring-links
- */
-
 import { LinkingOptions } from '@react-navigation/native';
-import * as Linking from 'expo-linking';
+import { createURL } from 'expo-linking';
+import { RootStackParamList } from './RootStackParamList';
+import { Screen, screensArray, screensObject } from './Screens';
 
-import { RootStackParamList } from '../types';
+const screens = screensArray.reduce((obj, screen) => ({}), {});
 
-const linking: LinkingOptions<RootStackParamList> = {
-  prefixes: [Linking.makeUrl('/')],
-  config: {
-    screens: {
-      Root: {
-        screens: {
-          TabOne: {
-            screens: {
-              TabOneScreen: 'one',
-            },
-          },
-          TabTwo: {
-            screens: {
-              TabTwoScreen: 'two',
-            },
-          },
-        },
-      },
-      Modal: 'modal',
-      NotFound: '*',
-    },
-  },
+export const linkingConfiguration: LinkingOptions<RootStackParamList> = {
+	prefixes: [createURL('/'), 'https://app.pcargo.eu'],
+	config: {
+		screens: {},
+		// screens: screensArray.reduce(
+		// 	(obj, screen) => ({
+		// 		...obj,
+		// 		[screen.name!]: screen.path,
+		// 	}),
+		// 	{},
+		// ),
+	},
 };
-
-export default linking;

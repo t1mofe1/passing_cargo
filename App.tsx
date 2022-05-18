@@ -1,22 +1,20 @@
+import Constants from 'expo-constants';
 import { StatusBar } from 'expo-status-bar';
+import { StrictMode } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-
-import useCachedResources from './hooks/useCachedResources';
-import useColorScheme from './hooks/useColorScheme';
-import Navigation from './navigation';
+import SplashScreen from './components/SplashScreen';
+import { Navigation } from './navigation';
 
 export default function App() {
-  const isLoadingComplete = useCachedResources();
-  const colorScheme = useColorScheme();
-
-  if (!isLoadingComplete) {
-    return null;
-  } else {
-    return (
-      <SafeAreaProvider>
-        <Navigation colorScheme={colorScheme} />
-        <StatusBar />
-      </SafeAreaProvider>
-    );
-  }
+	return (
+		<StrictMode>
+			<SafeAreaProvider>
+				<SplashScreen image={Constants.manifest?.splash?.image}>
+					<Navigation />
+					{/* TODO: check what is statusbar */}
+					<StatusBar />
+				</SplashScreen>
+			</SafeAreaProvider>
+		</StrictMode>
+	);
 }
