@@ -9,24 +9,24 @@
 		"userInterfaceStyle": "automatic",
 		"splash": {
 			"image": "./assets/images/splash.png",
-			"resizeMode": "contain",
-			"backgroundColor": "#ffffff"
+			"backgroundColor": "#003049"
 		},
-		"updates": {
-			"fallbackToCacheTimeout": 0
-		},
+		"githubUrl": "https://github.com/t1mofe1/passing_cargo",
 		"assetBundlePatterns": ["**/*"],
 		"ios": {
-			"supportsTablet": true
+			"supportsTablet": true,
+			"associatedDomains": ["pcargo.eu"]
 		},
 		"android": {
 			"adaptiveIcon": {
 				"foregroundImage": "./assets/images/adaptive-icon.png",
-				"backgroundColor": "#ffffff"
+				"backgroundColor": "#000"
 			}
 		},
 		"web": {
 			"favicon": "./assets/images/favicon.png"
-		}
-	}
+		},
+		"sdkVersion": "45.0.0"
+	},
+	"name": "pc"
 }

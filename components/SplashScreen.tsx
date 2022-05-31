@@ -1,21 +1,16 @@
 import { FontAwesome5 } from '@expo/vector-icons';
 import Constants from 'expo-constants';
-import * as Font from 'expo-font';
-import * as ExpoSplashScreen from 'expo-splash-screen';
-import { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
+import { loadAsync as loadFontsAsync } from 'expo-font';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 
-// Instruct ExpoSplashScreen not to hide yet, we want to do this manually
-ExpoSplashScreen.preventAutoHideAsync().catch(() => {
-	/* reloading the app might trigger some race conditions, ignore them */
-});
+type SplashScreenProps = {
+	image?: string;
+	fadeOutDuration?: number;
 
-export default function SplashScreen({
-	children,
-	image,
-}: PropsWithChildren<{
-	image: string;
-}>) {
+	children: React.ReactNode;
+};
+export default function SplashScreen({ children, image, fadeOutDuration = 500 }: SplashScreenProps) {
 	const [ready, setReady] = useState(false);
 
 	const animation = useMemo(() => new Animated.Value(1), []);
@@ -25,7 +20,7 @@ export default function SplashScreen({
 		if (ready) {
 			Animated.timing(animation, {
 				toValue: 0,
-				duration: 200,
+				duration: fadeOutDuration,
 				useNativeDriver: true,
 			}).start(() => setIsSplashAnimationFinished(true));
 		}
@@ -33,12 +28,9 @@ export default function SplashScreen({
 
 	const onImageLoaded = useCallback(async () => {
 		try {
-			// Keep the splash screen visible while we load the resources
-			await ExpoSplashScreen.preventAutoHideAsync();
-
 			// Pre-load the assets
 			await Promise.all([
-				Font.loadAsync({
+				loadFontsAsync({
 					...FontAwesome5.font,
 					'space-mono': require('../assets/fonts/SpaceMono-Regular.ttf'),
 				}),
@@ -46,8 +38,8 @@ export default function SplashScreen({
 
 			// Delay for a bit to make sure the splash screen is visible
 			await new Promise(resolve => setTimeout(resolve, 2000));
-		} catch (e) {
-			console.warn(e);
+		} catch (err) {
+			console.warn({ err });
 		} finally {
 			// We're ready to show the app
 			setReady(true);
@@ -63,12 +55,26 @@ export default function SplashScreen({
 					style={[
 						StyleSheet.absoluteFill,
 						{
-							backgroundColor: Constants.manifest?.splash?.backgroundColor ?? '#fff',
+							backgroundColor: Constants.manifest?.splash?.backgroundColor ?? '#000',
 							opacity: animation,
+						},
+						{
+							flex: 1,
+							justifyContent: 'center',
+							alignItems: 'center',
 						},
 					]}
 				>
-					<Animated.Image
+					<Animated.Text
+						style={{
+							fontSize: 36,
+							color: '#fff',
+						}}
+						onLayout={onImageLoaded}
+					>
+						Passing Cargo
+					</Animated.Text>
+					{/* <Animated.Image
 						style={{
 							width: '100%',
 							height: '100%',
@@ -79,10 +85,10 @@ export default function SplashScreen({
 								},
 							],
 						}}
-						source={{ uri: image }}
+						source={image ? { uri: image } : require('../assets/images/splash.png')}
 						onLoadEnd={onImageLoaded}
 						fadeDuration={0}
-					/>
+					/> */}
 				</Animated.View>
 			)}
 		</View>

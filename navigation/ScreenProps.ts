@@ -1,4 +1,4 @@
-import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from './RootStackParamList';
 
-export type ScreenProps<S extends keyof RootStackParamList> = BottomTabScreenProps<RootStackParamList, S>;
+export type ScreenProps<S extends keyof RootStackParamList> = NativeStackScreenProps<RootStackParamList, S>;

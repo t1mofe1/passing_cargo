@@ -1,7 +1,7 @@
-import { Text as TextDefault } from 'react-native';
+import { Text as TextDefault, TextProps } from 'react-native';
 import useTheme from '../hooks/useTheme';
 
-export function Text() {
+export function Text(props: TextProps) {
 	const { theme } = useTheme();
 
 	return (
@@ -9,6 +9,7 @@ export function Text() {
 			style={{
 				color: theme.colors.text,
 			}}
+			{...props}
 		/>
 	);
 }

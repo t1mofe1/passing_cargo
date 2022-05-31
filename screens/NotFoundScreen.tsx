@@ -1,15 +1,12 @@
-import { useNavigation } from '@react-navigation/native';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RootStackParamList } from '../navigation';
 import { ScreenProps } from '../navigation/ScreenProps';
 
-export default function NotFoundScreen() {
-	const navigation = useNavigation();
-
+export default function NotFoundScreen({ navigation }: ScreenProps<'NotFound'>) {
 	return (
 		<View style={styles.container}>
 			<Text style={styles.title}>Oops! Seems like you've got in an unknown place.. Try going back maybe?</Text>
-			<TouchableOpacity onPress={() => navigation.goBack()} style={styles.link}>
+			<TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.link}>
 				<Text style={styles.linkText}>Go to home screen!</Text>
 			</TouchableOpacity>
 		</View>

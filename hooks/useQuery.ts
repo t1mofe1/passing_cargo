@@ -39,7 +39,7 @@ type UseQueryReturn<T extends HTTPEndpoints> = {
 	setErrorListener: React.Dispatch<React.SetStateAction<ErrorCallback | undefined>>;
 };
 
-const generateRequest = <T extends HTTPEndpoints>(endpoint: T, opts: Options<T>) => {
+export const generateRequest = <T extends HTTPEndpoints>(endpoint: T, opts: Options<T>) => {
 	const {
 		method = 'GET',
 		params = {},
