@@ -1,4 +1,4 @@
-import { NavigationProp, RouteProp, useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
+import { CommonActions, NavigationProp, RouteProp, useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { useCallback } from 'react';
 import { RootStackParamList } from '../navigation';
 import useAuth from './useAuth';

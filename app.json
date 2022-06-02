@@ -1,32 +1,35 @@
 {
-	"expo": {
-		"name": "PC",
-		"slug": "PC",
-		"version": "1.0.0",
-		"orientation": "portrait",
-		"icon": "./assets/images/icon.png",
-		"scheme": "pcargo",
-		"userInterfaceStyle": "automatic",
-		"splash": {
-			"image": "./assets/images/splash.png",
-			"backgroundColor": "#003049"
-		},
-		"githubUrl": "https://github.com/t1mofe1/passing_cargo",
-		"assetBundlePatterns": ["**/*"],
-		"ios": {
-			"supportsTablet": true,
-			"associatedDomains": ["pcargo.eu"]
-		},
-		"android": {
-			"adaptiveIcon": {
-				"foregroundImage": "./assets/images/adaptive-icon.png",
-				"backgroundColor": "#000"
-			}
-		},
-		"web": {
-			"favicon": "./assets/images/favicon.png"
-		},
-		"sdkVersion": "45.0.0"
-	},
-	"name": "pc"
+  "expo": {
+    "name": "PC",
+    "slug": "PC",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "pcargo",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "backgroundColor": "#003049"
+    },
+    "githubUrl": "https://github.com/t1mofe1/passing_cargo",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "associatedDomains": [
+        "pcargo.eu"
+      ]
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#000"
+      }
+    },
+    "web": {
+      "favicon": "./assets/images/favicon.png"
+    }
+  },
+  "name": "pc"
 }

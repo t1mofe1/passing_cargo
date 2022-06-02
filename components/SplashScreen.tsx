@@ -1,8 +1,15 @@
 import { FontAwesome5 } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import { loadAsync as loadFontsAsync } from 'expo-font';
+import * as ExpoSplashScreen from 'expo-splash-screen';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Animated, StyleSheet, Text, View } from 'react-native';
+import { Animated, StyleSheet, View } from 'react-native';
+import useAsset from './../hooks/useAsset';
+
+// Instruct SplashScreen not to hide yet, we want to do this manually
+ExpoSplashScreen.preventAutoHideAsync().catch(() => {
+	/* reloading the app might trigger some race conditions, ignore them */
+});
 
 type SplashScreenProps = {
 	image?: string;
@@ -11,6 +18,10 @@ type SplashScreenProps = {
 	children: React.ReactNode;
 };
 export default function SplashScreen({ children, image, fadeOutDuration = 500 }: SplashScreenProps) {
+	const imageAsset = useAsset(image);
+
+	// console.log({ imageAsset });
+
 	const [ready, setReady] = useState(false);
 
 	const animation = useMemo(() => new Animated.Value(1), []);
@@ -28,6 +39,8 @@ export default function SplashScreen({ children, image, fadeOutDuration = 500 }:
 
 	const onImageLoaded = useCallback(async () => {
 		try {
+			await ExpoSplashScreen.hideAsync();
+
 			// Pre-load the assets
 			await Promise.all([
 				loadFontsAsync({
