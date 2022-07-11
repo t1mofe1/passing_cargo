@@ -1,19 +1,16 @@
-import { CommonActions, NavigationProp, RouteProp, useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
+import useAuth from '@/hooks/useAuth';
+import useScreens from '@/hooks/useScreens';
+import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
-import { RootStackParamList } from '../navigation';
-import useAuth from './useAuth';
 
 export default function useAuthenticatedScreen() {
-	const { loggedIn, user } = useAuth();
+	const { loggedIn } = useAuth();
 
-	const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-	const route = useRoute<RouteProp<RootStackParamList>>();
+	const { navigation } = useScreens();
 
 	useFocusEffect(
 		useCallback(() => {
-			if (!loggedIn) {
-				navigation.navigate('Auth');
-			}
+			if (!loggedIn) navigation.openAsNew('Auth');
 		}, [loggedIn, navigation]),
 	);
 }

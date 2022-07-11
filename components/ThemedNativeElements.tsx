@@ -1,15 +1,18 @@
+import useTheme from '@/hooks/useTheme';
 import { Text as TextDefault, TextProps } from 'react-native';
-import useTheme from '../hooks/useTheme';
 
-export function Text(props: TextProps) {
+export function Text({ style, ...rest }: TextProps) {
 	const { theme } = useTheme();
 
 	return (
 		<TextDefault
-			style={{
-				color: theme.colors.text,
-			}}
-			{...props}
+			style={[
+				{
+					color: theme.colors.text,
+				},
+				style,
+			]}
+			{...rest}
 		/>
 	);
 }

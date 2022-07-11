@@ -1,17 +1,18 @@
+import useAuth from '@/hooks/useAuth';
+import useScreens from '@/hooks/useScreens';
 import { useFocusEffect } from '@react-navigation/native';
-import axios from 'axios';
 import { useCallback } from 'react';
-import { Button, Text, View } from 'react-native';
-import { ScreenProps } from '../navigation';
-import useAuth from './../hooks/useAuth';
+import { ActivityIndicator, Button, Text, View } from 'react-native';
 
-export default function AuthScreen({ navigation }: ScreenProps<'Auth'>) {
-	const { loggedIn, loginWithGoogle } = useAuth();
+export default function AuthScreen() {
+	const { loggedIn, loggingIn, loginWithGoogle } = useAuth();
+
+	const { navigation } = useScreens();
 
 	// #region if user is logged in, redirect to home
 	useFocusEffect(
 		useCallback(() => {
-			if (loggedIn) navigation.navigate('Home');
+			if (loggedIn) navigation.openAsNew('Home');
 		}, [loggedIn, navigation]),
 	);
 	// #endregion if user is logged in, redirect to home
@@ -20,13 +21,14 @@ export default function AuthScreen({ navigation }: ScreenProps<'Auth'>) {
 		<View
 			style={{
 				flex: 1,
-
 				justifyContent: 'center',
 				alignItems: 'center',
+				width: '100%',
+				height: '100%',
 			}}
 		>
 			<Text>Auth Screen</Text>
-			<Button title={`Login With Google`} onPress={loginWithGoogle} />
+			{loggingIn ? <ActivityIndicator size={'large'} /> : <Button title={`Login With Google`} onPress={loginWithGoogle} />}
 		</View>
 	);
 }

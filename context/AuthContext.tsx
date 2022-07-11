@@ -1,6 +1,7 @@
-import axios from 'axios';
+import useAuthProvider, { GoogleUserInfo } from '@/hooks/useAuthProvider';
+import * as AuthSession from 'expo-auth-session';
+import * as GoogleAuth from 'expo-auth-session/providers/google';
 import { createContext, useCallback, useState } from 'react';
-import useAuthProvider, { GoogleUserInfo } from '../hooks/useAuthProvider';
 
 type LoginProps = {
 	username: string;
@@ -11,54 +12,68 @@ type AuthContextProps = {
 	loggedIn: boolean;
 	user: GoogleUserInfo | undefined;
 
+	loggingIn: boolean;
+
 	// login: (username: string, password: string) => Promise<void>;
-	loginWithGoogle: () => Promise<void>;
+	loginWithGoogle: () => Promise<GoogleUserInfo>;
 };
 
 export const AuthContext = createContext<AuthContextProps>({
 	loggedIn: false,
 	user: undefined,
 
+	loggingIn: false,
+
 	// login: async (username: string, password: string) => {},
-	loginWithGoogle: async () => {},
+	loginWithGoogle: async () => ({} as GoogleUserInfo),
 });
 
 export const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
 	const [loggedIn, setLoggedIn] = useState(false);
-	// const [user, setUser] = useState<User>();
+	const [loggingIn, setLoggingIn] = useState(false);
+
 	const [user, setUser] = useState<GoogleUserInfo>();
 
-	// #region default login
-	// const login = useCallback((
-	// 	({ username, password }: LoginProps) => {
+	const returnResult = useCallback(
+		<T extends any>(result?: T): T | undefined => {
+			setLoggingIn(false);
+			setLoggedIn(typeof result !== 'undefined');
 
-	// 	}), []);
-	// #endregion default login
+			// setUser(result as User);
+			setUser(result as GoogleUserInfo);
+
+			return result;
+		},
+		[setLoggedIn, setLoggingIn, setUser],
+	);
 
 	// #region google auth
 	const googleAuth = useAuthProvider('google');
 	const loginWithGoogle = useCallback(async () => {
+		setLoggingIn(true);
+
 		const { authentication } = await googleAuth.login();
 
-		console.log({ authentication });
+		if (!authentication) return returnResult();
 
-		if (!authentication) return;
-
-		// https://www.googleapis.com/oauth2/v2/userinfo
-		const userInfo: GoogleUserInfo = await axios({
-			method: 'GET',
-			url: 'https://www.googleapis.com/oauth2/v2/userinfo',
-			headers: {
-				Authorization: `Bearer ${authentication.accessToken}`,
+		const userInfo = (await AuthSession.fetchUserInfoAsync(
+			{
+				accessToken: authentication.accessToken,
 			},
-		}).then(({ data }) => data);
+			{
+				...GoogleAuth.discovery,
+				userInfoEndpoint: 'https://www.googleapis.com/oauth2/v2/userinfo',
+			},
+		)) as GoogleUserInfo;
 
-		if (!userInfo) return console.warn('Failed to get user info');
+		if (!userInfo) {
+			console.warn('Failed to get user info');
+			return returnResult();
+		}
 
 		console.log({ userInfo });
 
-		setLoggedIn(true);
-		setUser(userInfo);
+		return returnResult(userInfo);
 	}, [googleAuth]);
 	// #endregion google auth
 
@@ -67,6 +82,8 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 			value={{
 				loggedIn,
 				user,
+
+				loggingIn,
 
 				loginWithGoogle,
 			}}

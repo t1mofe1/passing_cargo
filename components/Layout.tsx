@@ -1,5 +1,5 @@
-import { Text, View } from 'react-native';
-import Footer from './Footer';
+import Footer from '@/components/Footer';
+import { View } from 'react-native';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
 	return (

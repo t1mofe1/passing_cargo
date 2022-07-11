@@ -1,27 +1,18 @@
+import { RootStackParamList } from '@/navigation/RootStackParamList';
+import { screens } from '@/navigation/screens';
 import { LinkingOptions, PathConfigMap } from '@react-navigation/native';
 import { createURL } from 'expo-linking';
-import { RootStackParamList } from './RootStackParamList';
 
-export const linkingConfiguration = {
+export const linkingConfiguration: LinkingOptions<RootStackParamList> = {
 	prefixes: [createURL('/'), 'https://app.pcargo.eu'],
 	config: {
-		screens: {
-			Main: {
-				initialRouteName: 'Home',
-				screens: {
-					Home: 'home',
-					Auth: 'auth',
-					Chats: 'chat',
-					Chat: 'chat/:chatId/:messageId?',
-					Deliveries: 'deliveries',
-					Delivery: 'deliveries/:deliveryId',
-					Profile: 'profile/:userId?',
-					Settings: 'settings/:tabId?',
-					Support: 'support',
-					Referral: 'referral',
-				},
-			},
-			NotFound: '*',
-		},
+		initialRouteName: screens[0].name,
+		screens: screens.reduce(
+			(obj, screen) => ({
+				...obj,
+				[screen.name]: screen.link,
+			}),
+			{},
+		) as PathConfigMap<RootStackParamList>,
 	},
 };

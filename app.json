@@ -1,6 +1,7 @@
 {
   "expo": {
-    "name": "PC",
+    "owner": "passingcargo",
+    "name": "Passing Cargo",
     "slug": "PC",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -9,7 +10,7 @@
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
-      "backgroundColor": "#003049"
+      "backgroundColor": "#feb237"
     },
     "githubUrl": "https://github.com/t1mofe1/passing_cargo",
     "assetBundlePatterns": [
@@ -19,13 +20,15 @@
       "supportsTablet": true,
       "associatedDomains": [
         "pcargo.eu"
-      ]
+      ],
+      "bundleIdentifier": "com.passingcargo.PC"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#000"
-      }
+      },
+      "package": "com.passingcargo.PC"
     },
     "web": {
       "favicon": "./assets/images/favicon.png"

@@ -1,6 +1,6 @@
+import { Colors } from '@/constants/Colors';
 import { DarkTheme as DefaultDarkTheme, DefaultTheme, Theme as DefaultThemeType } from '@react-navigation/native';
 import { ColorSchemeName as DefaultColorSchemeName } from 'react-native';
-import { Colors } from './Colors';
 
 export type ColorSchemeName = NonNullable<DefaultColorSchemeName>;
 type ColorsType = DefaultThemeType['colors'] & typeof Colors['dark'] & typeof Colors['light'];

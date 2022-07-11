@@ -1,24 +1,31 @@
-import Constants from 'expo-constants';
 import { StatusBar } from 'expo-status-bar';
-import { StrictMode } from 'react';
+// import { StrictMode } from 'react';
+import SplashScreen from '@/components/SplashScreen';
+import { AuthContextProvider } from '@/context/AuthContext';
+import { Navigation } from '@/navigation/StackNavigation';
+import { UIManager } from 'react-native';
 import 'react-native-gesture-handler';
+import { useMMKVListener } from 'react-native-mmkv';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import SplashScreen from './components/SplashScreen';
-import { AuthContextProvider } from './context/AuthContext';
-import { Navigation } from './navigation';
+
+UIManager.setLayoutAnimationEnabledExperimental(true);
 
 export default function App() {
+	useMMKVListener(key => {
+		console.log(`MMKV: "${key}" changed!`);
+	});
+
 	return (
-		<StrictMode>
-			<SafeAreaProvider>
-				<AuthContextProvider>
-					<SplashScreen image={Constants.manifest!.splash!.image}>
-						<Navigation />
-						{/* TODO: check what is statusbar */}
-						<StatusBar />
-					</SplashScreen>
-				</AuthContextProvider>
-			</SafeAreaProvider>
-		</StrictMode>
+		// <StrictMode>
+		<SafeAreaProvider>
+			<AuthContextProvider>
+				<SplashScreen>
+					<Navigation />
+					{/* TODO: check what is statusbar */}
+					<StatusBar />
+				</SplashScreen>
+			</AuthContextProvider>
+		</SafeAreaProvider>
+		// </StrictMode>
 	);
 }

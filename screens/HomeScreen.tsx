@@ -1,9 +1,7 @@
+import Layout from '@/components/Layout';
+import { Text } from '@/components/ThemedNativeElements';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { View } from 'react-native';
-import Layout from '../components/Layout';
-import { Text } from '../components/ThemedNativeElements';
-import useAuthenticatedScreen from '../hooks/useAuthenticatedScreen';
-import { ScreenProps } from '../navigation';
 
 const icons = {
 	Home: ['home'],
@@ -13,9 +11,7 @@ const icons = {
 	Profile: ['user'],
 };
 
-export default function HomeScreen({ navigation }: ScreenProps<'Home'>) {
-	useAuthenticatedScreen();
-
+export default function HomeScreen() {
 	return (
 		<Layout>
 			{Object.entries(icons).map(([type, icons]) => (

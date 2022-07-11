@@ -1,8 +1,8 @@
+import useTheme from '@/hooks/useTheme';
+import { RootStackParamList } from '@/navigation/RootStackParamList';
 import { Entypo, FontAwesome5 } from '@expo/vector-icons';
 import { Link, RouteProp, useRoute } from '@react-navigation/native';
 import { StyleProp, View } from 'react-native';
-import useTheme from '../hooks/useTheme';
-import { RootStackParamList } from '../navigation';
 
 export default function Footer() {
 	const { name: routeName } = useRoute<RouteProp<RootStackParamList>>();
@@ -37,12 +37,13 @@ export default function Footer() {
 			flexDirection: 'row',
 			borderRadius: 50,
 		},
+		linkContainer: {},
 	};
 
 	return (
 		<View style={styles.footerContainer}>
 			<Link style={{ backgroundColor: 'red' }} to={{ screen: 'Home' }}>
-				<Entypo name='home' size={28} color={routeColor('Home')} />
+				<Entypo style={{ backgroundColor: 'blue' }} name='home' size={28} color={routeColor('Home')} />
 				{/* Variants: home */}
 			</Link>
 			<Link style={{ backgroundColor: 'red' }} to={{ screen: 'Chats' }}>

@@ -1,7 +1,7 @@
+import { EndpointCallback, EndpointData, EndpointMethod, EndpointParams, HTTPEndpoints, ListenCallback } from '@/types';
+import { formatURLParams, Param } from '@/utils/formatURLParams';
 import axios from 'axios';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { EndpointCallback, EndpointData, EndpointMethod, EndpointParams, HTTPEndpoints, ListenCallback } from '../types';
-import { formatURLParams, Param } from '../utils/formatURLParams';
 
 type RequestOptions<T extends HTTPEndpoints> = {
 	method?: EndpointMethod[T];

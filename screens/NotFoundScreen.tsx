@@ -1,14 +1,18 @@
+import useScreens from '@/hooks/useScreens';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { RootStackParamList } from '../navigation';
-import { ScreenProps } from '../navigation/ScreenProps';
 
-export default function NotFoundScreen({ navigation }: ScreenProps<'NotFound'>) {
+export default function NotFoundScreen() {
+	const { navigation, route } = useScreens();
+
+	console.log({ route });
+
 	return (
 		<View style={styles.container}>
 			<Text style={styles.title}>Oops! Seems like you've got in an unknown place.. Try going back maybe?</Text>
-			<TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.link}>
+			<TouchableOpacity onPress={() => navigation.open('Home')} style={styles.link}>
 				<Text style={styles.linkText}>Go to home screen!</Text>
 			</TouchableOpacity>
+			<Text>{JSON.stringify(route)}</Text>
 		</View>
 	);
 }

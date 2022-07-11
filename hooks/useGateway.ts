@@ -1,6 +1,6 @@
+import { useEncryption } from '@/hooks/useEncryption';
+import { Callback, Encrypted, EndpointCallback, EndpointData, GatewayEndpoints, ListenCallback } from '@/types';
 import io, { ManagerOptions, SocketOptions } from 'socket.io-client';
-import { Callback, Encrypted, EndpointCallback, EndpointData, GatewayEndpoints, ListenCallback } from '../types';
-import { useEncryption } from './useEncryption';
 
 export function useGateway(options?: Partial<ManagerOptions & SocketOptions>) {
 	const socket = io({

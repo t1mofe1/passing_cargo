@@ -1,107 +1,145 @@
+import AnimatedStroke from '@/animations/Stroke';
+// import { Text } from '@/components/ThemedNativeElements';
+import useFadeAnimation from '@/hooks/useFadeAnimation';
+import useTheme from '@/hooks/useTheme';
 import { FontAwesome5 } from '@expo/vector-icons';
-import Constants from 'expo-constants';
 import { loadAsync as loadFontsAsync } from 'expo-font';
 import * as ExpoSplashScreen from 'expo-splash-screen';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
-import useAsset from './../hooks/useAsset';
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { Animated, Easing, StyleSheet, View } from 'react-native';
+import { Svg } from 'react-native-svg';
+import useAnimatedProgressListener from './../hooks/useAnimatedProgressListener';
 
 // Instruct SplashScreen not to hide yet, we want to do this manually
-ExpoSplashScreen.preventAutoHideAsync().catch(() => {
-	/* reloading the app might trigger some race conditions, ignore them */
-});
+ExpoSplashScreen.preventAutoHideAsync().catch(() => {}); /* reloading the app might trigger some race conditions, ignore them */
 
-type SplashScreenProps = {
-	image?: string;
-	fadeOutDuration?: number;
+// #region animation
+const splashImagePaths = [
+	'M347 373C347 363.419 348.192 351.532 336 349.329C332.743 348.741 329.296 349 326 349C326 342.982 327.17 335.429 323.91 330.044C319.885 323.394 309.961 322.998 303 323.002C300.083 323.003 296.816 322.83 294.39 324.742C287.91 329.852 284.87 342.753 281.247 350C279.031 354.433 270.262 366.504 274.032 371.397C275.852 373.76 280.415 372.999 283 373L302 373C305.025 373 308.944 373.615 311.791 372.397C316.569 370.353 317.996 364.019 324 363.724C330.225 363.417 331.556 369.055 335.684 371.972C338.504 373.966 343.718 373 347 373M246 326L246 332L275 332C277.319 331.995 283.364 332.703 283.364 329C283.364 325.297 277.319 326.005 275 326L246 326z',
+	'M292 350L317 350C317 346.036 317.855 340.824 316.258 337.109C314.233 332.4 303.494 330.211 299.637 333.603C295.66 337.102 293.416 345.048 292 350z',
+	'M268 348C267.923 345.671 268.109 342.971 265.682 341.742C262.966 340.367 258.943 341 256 341L237 341C234.091 341.001 229.973 340.388 227.449 342.178C225.129 343.824 225.517 346.841 228.232 347.682C231.723 348.764 236.377 348 240 348L251 348L268 348M246.232 356.742C243.434 358.065 242.971 361.672 246.232 362.682C251.044 364.173 257.985 363.09 262.999 362.995C264.694 362.963 266.977 363.147 268.377 361.973C270.93 359.833 268.256 356.954 265.941 356.318C261.411 355.073 250.516 354.718 246.232 356.742M321.019 365.743C310.061 370.022 317.197 386.592 327.906 381.987C337.942 377.671 331.546 361.632 321.019 365.743M137 407L137 412C140.11 412 150.793 410.894 150.793 416C150.793 421.106 140.11 420 137 420L137 432L142 432L142 425C145.439 425 149.812 425.666 152.945 423.972C158.697 420.863 159.099 412.405 153.867 408.603C149.66 405.547 141.94 407 137 407M158 432C162.172 431.861 164.072 431.254 165 427C170.542 427 175.79 425.99 178 432L184 432C182.866 425.412 179.587 419.075 176.846 413.005C175.684 410.432 174.383 407.296 171.061 407.296C167.883 407.296 166.468 410.557 165.309 413.005C162.49 418.962 159.155 425.503 158 432M199 424L199 426C194.964 426.749 191.101 426.997 187 427L187 432C191.25 432 198.017 433.268 201.772 430.972C205.667 428.59 205.637 422.521 202.566 419.51C199.935 416.93 195.406 416.108 192 415L192 413C196.036 412.251 199.899 412.003 204 412L204 407C199.697 407 193.07 405.789 189.279 408.179C185.005 410.874 185.638 417.383 189.228 420.297C191.9 422.466 195.768 423.083 199 424M223 426C218.623 426.553 214.422 426.997 210 427L210 432C214.313 432 221.015 433.244 224.852 430.972C228.81 428.629 228.755 422.46 225.682 419.43C223.01 416.795 218.463 416.108 215 415L215 413C219.036 412.251 222.899 412.003 227 412L227 407C223.052 407 217.775 406.102 214.059 407.603C209.72 409.355 208.723 415.937 211.742 419.351C214.649 422.638 219.791 422.896 223 426M233 407L233 432L238 432L238 407L233 407M243 407L243 432L248 432L248 416C253.037 422.602 255.644 431.696 265 432L265 407L260 407L260 422C254.95 415.053 252.575 407.113 243 407M293 417L283 417L283 422L288 422C282.017 432.241 268.399 417.697 280.015 413.619C283.08 412.543 285.886 414.669 288.847 414.022C291.113 413.526 291.694 411.188 290.338 409.429C288.466 407.001 284.765 406.972 282 407.019C273.506 407.164 267.136 414.369 269.573 423C271.817 430.946 284.203 435.848 290.682 429.566C293.895 426.451 293 421.061 293 417M326 432L326 426C316.523 424.07 316.536 414.926 326 413L326 407C313.864 407.293 306.411 422.581 318.044 430.258C320.49 431.872 323.183 431.932 326 432M328 432C332.172 431.861 334.072 431.254 335 427C340.542 427 345.79 425.99 348 432L354 432C352.866 425.412 349.587 419.075 346.846 413.005C345.684 410.432 344.383 407.296 341.061 407.296C337.883 407.296 336.468 410.557 335.309 413.005C332.49 418.962 329.155 425.503 328 432M357 407L357 432L362 432L362 425C367.689 426.748 369.401 431.785 376 432C375.056 429.013 373.714 426.624 372 424C377.487 420.875 378.938 411.831 372.786 408.179C368.645 405.721 361.648 407 357 407M403 417L393 417L393 422L398 422C392.812 430.88 379.882 420.406 388.137 414.728C392.536 411.703 398.077 414.834 403 413C397.137 401.115 377.635 407.807 379.37 421C380.557 430.026 393.413 436.614 400.682 429.566C403.895 426.451 403 421.061 403 417M415.015 407.703C407.342 410.368 404.764 420.593 409.514 426.956C413.134 431.806 420.358 433.442 425.996 431.258C434.317 428.034 435.829 416.249 429.772 410.228C426.173 406.65 419.697 406.076 415.015 407.703z',
+	'M362 412L362 420C366.505 419.791 376.04 415.115 367.005 412.434C365.394 411.956 363.656 412.04 362 412M416.109 414.028C407.247 419.009 417.416 429.305 424.772 424.821C432.877 419.88 423.413 409.922 416.109 414.028M171 415C169.682 417.327 168.739 419.433 168 422L174 422C173.287 419.409 172.485 417.236 171 415M341 415C339.682 417.327 338.739 419.433 338 422L344 422C343.287 419.409 342.485 417.236 341 415z',
+	'M177 446C176.768 447.49 176.396 449.065 176.379 450.581C176.245 462.094 194.032 448.273 181.966 446.148C180.365 445.866 178.616 446.006 177 446M187 446C187.211 448.739 187.303 449.422 190 450C188.267 451.757 187.659 452.642 187 455L197 455C196.693 452.877 196.618 452.314 195 451C196.336 449.175 196.69 448.247 197 446L187 446M198 446L198 455L208 455L208 446L198 446M210 446L210 455C212.752 454.809 223.223 451.247 218.238 447.024C216.272 445.358 212.379 446.002 210 446M221 446L221 455L230 455L230 451L226 451L226 446L221 446M231 446L231 455L241 455L241 446L231 446M264 446L264 455C267.183 454.788 269.919 453.687 273 453L274 446L264 446M274 455C279.076 454.884 288.143 456.626 292.683 454.396C295.245 453.138 295.631 448.809 293.397 447.028C291.519 445.531 288.23 446.008 286 446L285 452C284.119 449.979 283.504 448.146 283 446C276.425 446.078 274.571 448.514 274 455M296 446L296 450L299 450L299 455L304 455L306 446L296 446M329 455L350 455C349.784 452.552 349.674 449.54 347.91 447.604C343.723 443.007 340.551 449.572 340 453C338.778 449.553 333.149 441.17 329.603 448.316C328.652 450.234 329.007 452.931 329 455M351 446L351 455C354.183 454.788 356.919 453.687 360 453L361 446L351 446M362 446L362 455L372 455L371 446L362 446M244 451L244 455L249 455L249 451L244 451M310 451L310 455L315 455L315 451L310 451M375 451L375 455L380 455L380 451L375 451z',
+];
 
-	children: React.ReactNode;
+const AnimatedSvg = Animated.createAnimatedComponent(Svg);
+
+type AnimationProps = {
+	onLoad: () => void;
+	onCompleted: () => void;
+	duration?: number;
 };
-export default function SplashScreen({ children, image, fadeOutDuration = 500 }: SplashScreenProps) {
-	const imageAsset = useAsset(image);
+const Animation: FC<AnimationProps> = ({ onLoad, onCompleted, duration: animationDuration = 4000 }) => {
+	const progress = useRef(new Animated.Value(0)).current;
 
-	// console.log({ imageAsset });
-
-	const [ready, setReady] = useState(false);
-
-	const animation = useMemo(() => new Animated.Value(1), []);
-	const [isSplashAnimationFinished, setIsSplashAnimationFinished] = useState(false);
+	const { progress: currentProgress } = useAnimatedProgressListener({
+		value: progress,
+	});
 
 	useEffect(() => {
-		if (ready) {
-			Animated.timing(animation, {
-				toValue: 0,
-				duration: fadeOutDuration,
-				useNativeDriver: true,
-			}).start(() => setIsSplashAnimationFinished(true));
-		}
-	}, [ready]);
+		console.log('Starting animation');
+		onLoad();
 
-	const onImageLoaded = useCallback(async () => {
+		Animated.timing(progress, {
+			toValue: 1,
+			duration: animationDuration,
+			useNativeDriver: true,
+			easing: Easing.linear,
+		}).start(onCompleted);
+	}, []);
+
+	return (
+		<Animated.View
+			style={{
+				...StyleSheet.absoluteFillObject,
+				flex: 1,
+				justifyContent: 'center',
+				alignItems: 'center',
+				width: '100%',
+				height: '100%',
+			}}
+		>
+			<AnimatedSvg
+				style={{
+					flex: 1,
+					justifyContent: 'center',
+					alignItems: 'center',
+					width: '100%',
+				}}
+			>
+				{splashImagePaths.map((d, key) => (
+					<AnimatedStroke progress={currentProgress} d={d} key={key} />
+				))}
+			</AnimatedSvg>
+		</Animated.View>
+	);
+};
+// #endregion animation
+
+type SplashScreenProps = {
+	fadeOutDuration?: number;
+	children: React.ReactNode;
+};
+export default function SplashScreen({ children, fadeOutDuration = 500 }: SplashScreenProps) {
+	const {
+		theme: {
+			colors: { tint: bgColor },
+		},
+	} = useTheme();
+
+	const [ready, setReady] = useState(false);
+	const [strokeAnimCompleted, setStrokeAnimCompleted] = useState(false);
+
+	const fadeOut = useFadeAnimation({
+		delay: 500,
+		duration: fadeOutDuration,
+		type: 'fadeOut',
+		startImmediately: false,
+	});
+
+	const onLoad = useCallback(async () => {
 		try {
+			// hide default splash screen
 			await ExpoSplashScreen.hideAsync();
 
 			// Pre-load the assets
 			await Promise.all([
 				loadFontsAsync({
 					...FontAwesome5.font,
-					'space-mono': require('../assets/fonts/SpaceMono-Regular.ttf'),
+					'space-mono': require('@/assets/fonts/SpaceMono-Regular.ttf'),
 				}),
 			]);
-
-			// Delay for a bit to make sure the splash screen is visible
-			await new Promise(resolve => setTimeout(resolve, 2000));
 		} catch (err) {
 			console.warn({ err });
 		} finally {
-			// We're ready to show the app
 			setReady(true);
 		}
 	}, []);
 
+	const onCompleted = useCallback(() => {
+		console.log('onCompleted');
+		setStrokeAnimCompleted(true);
+		fadeOut.start();
+	}, []);
+
 	return (
-		<View style={{ flex: 1 }}>
-			{ready && children}
-			{!isSplashAnimationFinished && (
+		<View
+			style={{
+				flex: 1,
+			}}
+		>
+			{ready && strokeAnimCompleted && children}
+			{fadeOut.value !== 0 && (
 				<Animated.View
+					style={{
+						...StyleSheet.absoluteFillObject,
+						flex: 1,
+						backgroundColor: bgColor,
+						opacity: fadeOut.value,
+					}}
 					pointerEvents='none'
-					style={[
-						StyleSheet.absoluteFill,
-						{
-							backgroundColor: Constants.manifest?.splash?.backgroundColor ?? '#000',
-							opacity: animation,
-						},
-						{
-							flex: 1,
-							justifyContent: 'center',
-							alignItems: 'center',
-						},
-					]}
 				>
-					<Animated.Text
-						style={{
-							fontSize: 36,
-							color: '#fff',
-						}}
-						onLayout={onImageLoaded}
-					>
-						Passing Cargo
-					</Animated.Text>
-					{/* <Animated.Image
-						style={{
-							width: '100%',
-							height: '100%',
-							resizeMode: Constants.manifest?.splash?.resizeMode ?? 'contain',
-							transform: [
-								{
-									scale: animation,
-								},
-							],
-						}}
-						source={image ? { uri: image } : require('../assets/images/splash.png')}
-						onLoadEnd={onImageLoaded}
-						fadeDuration={0}
-					/> */}
+					<Animation onCompleted={onCompleted} onLoad={onLoad} />
 				</Animated.View>
 			)}
 		</View>

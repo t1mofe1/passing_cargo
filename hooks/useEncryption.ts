@@ -1,9 +1,9 @@
 import * as Crypto from 'expo-crypto';
 import { getRandomBytes } from 'expo-random';
 import { useCallback, useEffect, useState } from 'react';
-import { encodeFromByteArray as byteArrayToBase64 } from 'react-native-base64';
-import { Encrypted, HTTPEndpoints } from '../types';
-import { useQuery } from './useQuery';
+// import { encodeFromByteArray as byteArrayToBase64 } from 'react-native-base64';
+import { useQuery } from '@/hooks/useQuery';
+import { Encrypted, HTTPEndpoints } from '@/types';
 
 export function useEncryption() {
 	const [clientSecretKey, setClientSecretKey] = useState<string>();
