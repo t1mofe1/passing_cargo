@@ -1,5 +1,18 @@
 import { RootStackParamList } from '@/navigation/RootStackParamList';
-import { AuthScreen, ChatScreen, ChatsScreen, DeliveriesScreen, DeliveryScreen, HomeScreen, NotFoundScreen, ProfileScreen, ReferralScreen, SettingsScreen, SupportScreen } from '@/screens';
+import {
+	AuthScreen,
+	ChatScreen,
+	ChatsScreen,
+	DeliveriesScreen,
+	DeliveryScreen,
+	HomeScreen,
+	NotFoundScreen,
+	ProfileScreen,
+	ReferralScreen,
+	SettingsScreen,
+	StartScreen,
+	SupportScreen,
+} from '@/screens';
 
 export type Screen = {
 	name: keyof RootStackParamList;
@@ -19,6 +32,12 @@ export const screens: Screen[] = [
 		name: 'Auth',
 		component: AuthScreen,
 		link: '/auth',
+		secured: false,
+	},
+	{
+		name: 'Start',
+		component: StartScreen,
+		link: '/start',
 		secured: false,
 	},
 	{

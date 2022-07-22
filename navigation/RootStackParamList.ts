@@ -10,4 +10,5 @@ export type RootStackParamList = {
 	Support: undefined;
 	Referral: undefined;
 	NotFound: undefined;
+	Start: undefined;
 };

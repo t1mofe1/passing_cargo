@@ -15,7 +15,7 @@ type AuthContextProps = {
 	loggingIn: boolean;
 
 	// login: (username: string, password: string) => Promise<void>;
-	loginWithGoogle: () => Promise<GoogleUserInfo>;
+	loginWithGoogle: () => Promise<GoogleUserInfo | undefined>;
 };
 
 export const AuthContext = createContext<AuthContextProps>({
@@ -34,19 +34,6 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 
 	const [user, setUser] = useState<GoogleUserInfo>();
 
-	const returnResult = useCallback(
-		<T extends any>(result?: T): T | undefined => {
-			setLoggingIn(false);
-			setLoggedIn(typeof result !== 'undefined');
-
-			// setUser(result as User);
-			setUser(result as GoogleUserInfo);
-
-			return result;
-		},
-		[setLoggedIn, setLoggingIn, setUser],
-	);
-
 	// #region google auth
 	const googleAuth = useAuthProvider('google');
 	const loginWithGoogle = useCallback(async () => {
@@ -54,7 +41,12 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 
 		const { authentication } = await googleAuth.login();
 
-		if (!authentication) return returnResult();
+		if (!authentication) {
+			setLoggingIn(false);
+			setLoggedIn(false);
+			setUser(undefined);
+			return undefined;
+		}
 
 		const userInfo = (await AuthSession.fetchUserInfoAsync(
 			{
@@ -68,12 +60,19 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 
 		if (!userInfo) {
 			console.warn('Failed to get user info');
-			return returnResult();
+
+			setLoggingIn(false);
+			setLoggedIn(false);
+			setUser(undefined);
+			return undefined;
 		}
 
 		console.log({ userInfo });
 
-		return returnResult(userInfo);
+		setLoggingIn(false);
+		setLoggedIn(true);
+		setUser(userInfo);
+		return userInfo;
 	}, [googleAuth]);
 	// #endregion google auth
 

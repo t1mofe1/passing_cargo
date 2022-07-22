@@ -18,21 +18,8 @@ export type GoogleUserInfo = {
 	locale: string;
 };
 
-Platform.OS === 'web' && WebBrowser.maybeCompleteAuthSession();
-
 export default function useAuthProvider(provider: OAuthProviderName) {
-	// #region warm up browser on android
-	useEffect(() => {
-		Platform.OS === 'android' && WebBrowser.warmUpAsync();
-
-		return () => {
-			Platform.OS === 'android' && WebBrowser.coolDownAsync();
-		};
-	});
-	// #endregion warm up browser on android
-
 	const OAuth = provider === 'google' ? GoogleAuth : FacebookAuth;
-	// const OAuth = GoogleAuth;
 
 	const providerInfo = Config.oauth[provider];
 
@@ -41,7 +28,6 @@ export default function useAuthProvider(provider: OAuthProviderName) {
 			// test replaceAll
 			.replace(/<Provider>/g, provider),
 
-		// TODO: should we use everything below?
 		preferLocalhost: true,
 		useProxy: Constants.appOwnership === AppOwnership.Expo,
 	});

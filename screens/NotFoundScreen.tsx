@@ -12,7 +12,7 @@ export default function NotFoundScreen() {
 			<TouchableOpacity onPress={() => navigation.open('Home')} style={styles.link}>
 				<Text style={styles.linkText}>Go to home screen!</Text>
 			</TouchableOpacity>
-			<Text>{JSON.stringify(route)}</Text>
+			<Text>{JSON.stringify(route, null, 2)}</Text>
 		</View>
 	);
 }
