@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, Easing, EasingFunction } from 'react-native';
-import useAnimatedProgressListener from './useAnimatedProgressListener';
+import Animated, { Easing, runOnJS, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
 
 type FadeAnimProps = {
 	type: 'fadeIn' | 'fadeOut';
-	easing?: EasingFunction;
+	easing?: Animated.EasingFunction;
 
 	onStart?: () => void;
 	onEnd?: () => void;
@@ -13,7 +12,6 @@ type FadeAnimProps = {
 
 	duration?: number;
 	delay?: number;
-	nativeDriver?: boolean;
 };
 export default function useFadeAnimation({
 	// callbacks
@@ -26,60 +24,54 @@ export default function useFadeAnimation({
 	duration = 300,
 	delay = 0,
 
-	nativeDriver = true,
-
 	type,
 	easing = Easing.linear,
 }: FadeAnimProps) {
-	const fadeVal = useRef(new Animated.Value(0)).current;
+	const fadeVal = useSharedValue(0);
 
-	const [running, setRunning] = useState(false);
-
-	const { progress: currentProgress } = useAnimatedProgressListener({
-		value: fadeVal,
-	});
+	const running = useSharedValue(false);
 
 	// #region fade animation
-	const startFade = useCallback(() => {
-		setRunning(true);
+	const startFade = () => {
+		'worklet';
 
-		Animated.timing(fadeVal, {
-			toValue: 1,
-			duration,
+		running.value = true;
+
+		fadeVal.value = withDelay(
 			delay,
-			useNativeDriver: nativeDriver,
-			easing,
-		}).start(() => {
-			stopFade();
-			onEnd?.();
-		});
-		onStart?.();
-	}, [fadeVal, duration, delay, nativeDriver, easing, onStart, onEnd]);
+			withTiming(1, {
+				duration,
+				easing,
+			}),
+		);
+
+		onStart && runOnJS(onStart)();
+	};
 	// #endregion fade animation
 
 	// #region stop animation
-	const stopFade = useCallback(() => {
-		fadeVal.stopAnimation();
-		setRunning(false);
-	}, [fadeVal]);
+	const stopFade = () => {
+		fadeVal.value = 0;
+		running.value = false;
+	};
 	// #endregion stop animation
 
 	// #region immediate start
 	useEffect(() => {
 		startImmediately && startFade();
+
 		return () => stopFade();
 	}, [startImmediately]);
 	// #endregion immediate start
 
 	// (fade | opacity) = (0 -> 1) | (1 -> 0)
-	const fadeValue = type === 'fadeIn' ? currentProgress : 1 - currentProgress;
+	const fadeValue = type === 'fadeIn' ? fadeVal.value : 1 - fadeVal.value;
 
 	return {
 		start: startFade,
 		stop: stopFade,
 
-		state: running,
-		progress: currentProgress,
+		state: running.value,
 
 		value: fadeValue,
 		animatedValue: fadeVal,

@@ -1,15 +1,15 @@
 import AnimatedStroke from '@/animations/Stroke';
 import useTheme from '@/hooks/useTheme';
-import { setStore, _getStorageData } from '@/Storage';
+import { useStore, _getStorageData } from '@/Storage';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { loadAsync as loadFontsAsync } from 'expo-font';
 import * as ExpoSplashScreen from 'expo-splash-screen';
 import { FC, useCallback, useEffect, useState } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
-import Animated, { Easing, FadeOut, Layout, runOnJS, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { Easing, runOnJS, useSharedValue, withTiming } from 'react-native-reanimated';
 import { Svg } from 'react-native-svg';
 
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+// const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 // Instruct SplashScreen not to hide yet, we want to do this manually
 ExpoSplashScreen.preventAutoHideAsync().catch(() => {}); /* reloading the app might trigger some race conditions, ignore them */
@@ -63,11 +63,12 @@ const Animation: FC<AnimationProps> = ({ onLoad, onCompleted, duration: animatio
 	const progress = useSharedValue(0);
 
 	useEffect(() => {
-		console.log('Starting animation');
+		console.log('[SplashScreenAnimation] onLoad');
 		onLoad();
 
 		const delayCallback = () => {
 			setTimeout(() => {
+				console.log('[SplashScreenAnimation] onCompleted');
 				onCompleted();
 			}, endDelay);
 		};
@@ -79,7 +80,7 @@ const Animation: FC<AnimationProps> = ({ onLoad, onCompleted, duration: animatio
 				easing: Easing.linear,
 			},
 			(finished, current) => {
-				console.log(`animated.timing completed | ${finished} | ${current}`);
+				console.log('[SplashScreenAnimation] delayCallback');
 
 				runOnJS(delayCallback)();
 			},
@@ -115,8 +116,10 @@ const Animation: FC<AnimationProps> = ({ onLoad, onCompleted, duration: animatio
 type SplashScreenProps = {
 	fadeOutDuration?: number;
 	children: React.ReactNode;
+
+	onCompleted?: () => void;
 };
-export default function SplashScreen({ children, fadeOutDuration = 500 }: SplashScreenProps) {
+export default function SplashScreen({ children, fadeOutDuration = 1000, onCompleted: onSplashScreenComplete }: SplashScreenProps) {
 	const {
 		theme: {
 			colors: { tint: bgColor },
@@ -126,8 +129,12 @@ export default function SplashScreen({ children, fadeOutDuration = 500 }: Splash
 	const [ready, setReady] = useState(false);
 	const [strokeAnimCompleted, setStrokeAnimCompleted] = useState(false);
 
+	const [, setStore] = useStore();
+
 	const onLoad = useCallback(async () => {
 		try {
+			console.log('[SplashScreen] onLoad');
+
 			// hide default splash screen
 			await ExpoSplashScreen.hideAsync();
 
@@ -146,34 +153,27 @@ export default function SplashScreen({ children, fadeOutDuration = 500 }: Splash
 		} catch (err) {
 			console.warn({ err });
 		} finally {
+			console.log('[SplashScreen] setReady(true)');
 			setReady(true);
 		}
 	}, []);
 
 	const onCompleted = useCallback(() => {
-		console.log('onCompleted');
+		console.log('[SplashScreen] onCompleted');
 		setStrokeAnimCompleted(true);
+
+		onSplashScreenComplete?.();
 	}, []);
 
 	return (
 		<View
 			style={{
 				flex: 1,
+				backgroundColor: bgColor,
 			}}
 		>
+			{(!ready || !strokeAnimCompleted) && <Animation onCompleted={onCompleted} onLoad={onLoad} />}
 			{ready && strokeAnimCompleted && children}
-			{(!ready || !strokeAnimCompleted) && (
-				<View
-					style={{
-						...StyleSheet.absoluteFillObject,
-						flex: 1,
-						backgroundColor: bgColor,
-					}}
-					pointerEvents='none'
-				>
-					<Animation onCompleted={onCompleted} onLoad={onLoad} />
-				</View>
-			)}
 		</View>
 	);
 }

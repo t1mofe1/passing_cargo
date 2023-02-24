@@ -13,12 +13,10 @@ const Tabs = createNativeStackNavigator<RootStackParamList>();
 export function Navigation() {
 	const { theme } = useTheme();
 
-	const [firstInit] = useStore.firstInit();
-
 	return (
 		<NavigationContainer<RootStackParamList> theme={theme} onUnhandledAction={action => console.log({ type: 'unhandled navigation action', action })} linking={linkingConfiguration}>
 			<Tabs.Navigator
-				initialRouteName={firstInit ? 'Start' : 'Auth'}
+				initialRouteName={'Auth'}
 				screenListeners={({ navigation, route }) => ({
 					focus: ({ target }) => {
 						console.log(`FOCUS: ${target}`);
