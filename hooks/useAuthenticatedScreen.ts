@@ -4,13 +4,13 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
 
 export default function useAuthenticatedScreen() {
-	const { loggedIn } = useAuth();
+  const { loginState } = useAuth();
 
-	const { navigation } = useScreens();
+  const { navigation } = useScreens();
 
-	useFocusEffect(
-		useCallback(() => {
-			if (!loggedIn) navigation.openAsNew('Auth');
-		}, [loggedIn, navigation]),
-	);
+  useFocusEffect(
+    useCallback(() => {
+      if (loginState === 'not-logged-in') navigation.openAsNew('Auth');
+    }, [loginState, navigation]),
+  );
 }

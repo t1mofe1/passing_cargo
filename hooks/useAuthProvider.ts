@@ -1,69 +1,38 @@
-import Config, { OAuthProviderName } from '@/Config';
-import { makeRedirectUri } from 'expo-auth-session';
-import * as FacebookAuth from 'expo-auth-session/providers/facebook';
-import * as GoogleAuth from 'expo-auth-session/providers/google';
-import Constants, { AppOwnership } from 'expo-constants';
-import * as WebBrowser from 'expo-web-browser';
-import { useEffect } from 'react';
-import { Platform } from 'react-native';
+import { useStore } from '@/Storage';
+import { FakeUser, fetchFakeUser } from '@/utils/fakeUser';
 
-export type GoogleUserInfo = {
-	id: string;
-	name: string;
-	given_name: string;
-	family_name: string;
-	picture: string;
-	email: string;
-	verified_email: boolean;
-	locale: string;
-};
+export default function useAuthProvider(provider: string) {
+  const [user, setUser] = useStore.user();
 
-export default function useAuthProvider(provider: OAuthProviderName) {
-	const OAuth = provider === 'google' ? GoogleAuth : FacebookAuth;
+  const login = async () => {
+    // const isSuccessedResult = Math.random() * 1 >= 0.5;
+    const isSuccessedResult = true;
 
-	const providerInfo = Config.oauth[provider];
+    const userData = isSuccessedResult ? await fetchFakeUser() : undefined;
 
-	const redirectUri = makeRedirectUri({
-		path: (providerInfo.redirectUri ?? Config.oauth.redirectUri)
-			// test replaceAll
-			.replace(/<Provider>/g, provider),
+    const errorResult = {
+      type: 'error' as const,
+      error: new Error(`Some error occured!`),
+      data: undefined,
+    };
+    const successResult = {
+      type: 'success' as const,
+      data: userData,
+      error: undefined,
+    };
 
-		preferLocalhost: true,
-		useProxy: Constants.appOwnership === AppOwnership.Expo,
-	});
+    const result: {
+      type: 'error' | 'success';
+      data?: FakeUser;
+      error?: Error;
+    } = isSuccessedResult ? successResult : errorResult;
 
-	// combine google and facebook config together
-	const authRequestConfig: Partial<GoogleAuth.GoogleAuthRequestConfig & FacebookAuth.FacebookAuthRequestConfig> = {
-		clientId: providerInfo.clientId,
-		redirectUri,
-	};
+    if (result.type === 'success') {
+      setUser(result.data);
+    }
 
-	const [request, response, promptAsync] = OAuth.useAuthRequest(authRequestConfig);
+    return result;
+  };
 
-	const login = async () => {
-		const result = await promptAsync();
-
-		const authentication = result.type === 'success' ? result.authentication : null;
-
-		if (!authentication) {
-			if (result.type === 'error') console.warn(`Error while logging in with ${provider}: ${result.error}`);
-			else console.warn(`${provider} login failed: ${result.type}`);
-		}
-
-		console.log({
-			request,
-			response,
-			authentication,
-			result,
-		});
-
-		return {
-			request,
-			response,
-			authentication,
-			result,
-		};
-	};
-
-	return { login, provider, redirectUri, OAuth };
+  return { login, provider };
 }

@@ -1,62 +1,33 @@
-import * as Updates from 'expo-updates';
-import { useEffect, useState } from 'react';
-import { ActivityIndicator, Platform, Text, TouchableOpacity, View } from 'react-native';
+import useReload from '@/hooks/useReload';
+import { FontAwesome5 } from '@expo/vector-icons';
+import { Pressable } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function RestartButton() {
-	const [reloading, setReloading] = useState(false);
+  const { reload } = useReload();
 
-	useEffect(() => {
-		if (reloading) {
-			setReloading(false);
-			Platform.OS === 'web' ? window.location.reload() : Updates.reloadAsync();
-		}
-	});
+  const insets = useSafeAreaInsets();
 
-	return (
-		<>
-			<TouchableOpacity
-				onPress={() => setReloading(true)}
-				style={{
-					position: 'absolute',
-					bottom: 0,
-					left: 0,
+  return (
+    <Pressable
+      onPress={reload}
+      style={{
+        position: 'absolute',
+        top: insets.top + 5,
+        right: 10,
 
-					padding: 5,
+        width: 45,
+        aspectRatio: 1,
 
-					width: 60,
-					height: 40,
+        backgroundColor: 'red',
 
-					backgroundColor: 'red',
+        borderRadius: 50,
 
-					borderRadius: 5,
-
-					justifyContent: 'center',
-					alignItems: 'center',
-				}}
-			>
-				<Text>Restart</Text>
-			</TouchableOpacity>
-
-			{reloading && (
-				<View
-					style={{
-						position: 'absolute',
-						top: 0,
-						left: 0,
-						right: 0,
-						bottom: 0,
-
-						backgroundColor: 'rgba(0, 0, 0, 0.5)',
-
-						justifyContent: 'center',
-						alignItems: 'center',
-
-						zIndex: 999,
-					}}
-				>
-					<ActivityIndicator size='large' color='lightpink' />
-				</View>
-			)}
-		</>
-	);
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <FontAwesome5 name='redo' size={18} />
+    </Pressable>
+  );
 }

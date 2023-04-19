@@ -1,13 +1,13 @@
-import { ColorSchemeName, Themes } from '@/constants/Themes';
+import { ColorSchemeName, themes } from '@/constants/Themes';
 import { useColorScheme } from 'react-native';
 
 export default function useTheme() {
-	const colorScheme = useColorScheme() as ColorSchemeName;
+  const currentTheme: ColorSchemeName = useColorScheme() || 'light';
 
-	const theme = Themes[colorScheme];
+  const themeColors = themes[currentTheme];
 
-	return {
-		colorScheme,
-		theme,
-	};
+  return {
+    theme: currentTheme,
+    colors: themeColors,
+  };
 }

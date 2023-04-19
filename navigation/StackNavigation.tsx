@@ -1,33 +1,47 @@
-import { Text } from '@/components/ThemedNativeElements';
-import useTheme from '@/hooks/useTheme';
 import { linkingConfiguration } from '@/navigation/LinkingConfiguration';
 import { RootStackParamList } from '@/navigation/RootStackParamList';
 import { screens } from '@/navigation/screens';
-import { useStore } from '@/Storage';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useEffect, useMemo, useState } from 'react';
 
 const Tabs = createNativeStackNavigator<RootStackParamList>();
 
 export function Navigation() {
-	const { theme } = useTheme();
-
-	return (
-		<NavigationContainer<RootStackParamList> theme={theme} onUnhandledAction={action => console.log({ type: 'unhandled navigation action', action })} linking={linkingConfiguration}>
-			<Tabs.Navigator
-				initialRouteName={'Auth'}
-				screenListeners={({ navigation, route }) => ({
-					focus: ({ target }) => {
-						console.log(`FOCUS: ${target}`);
-					},
-				})}
-				screenOptions={{ headerShown: false }}
-			>
-				{screens.map(screen => (
-					<Tabs.Screen name={screen.name} component={screen.component} key={screen.name} />
-				))}
-			</Tabs.Navigator>
-		</NavigationContainer>
-	);
+  return (
+    <NavigationContainer<RootStackParamList>
+      onUnhandledAction={(action) =>
+        console.log({ type: 'unhandled navigation action', action })
+      }
+      linking={linkingConfiguration}
+    >
+      <Tabs.Navigator
+        initialRouteName={'Auth'}
+        screenListeners={({ route }) => ({
+          focus: ({ data }) => {
+            console.log(
+              `[NAVIGATION]: Changed screen to ${JSON.stringify(route.name)}${
+                data ? ' | ' + JSON.stringify(route.params) : ''
+              }`,
+            );
+          },
+        })}
+        screenOptions={{
+          headerShown: false,
+          animation: 'fade',
+          animationDuration: 50,
+        }}
+      >
+        {screens.map((screen) => (
+          <Tabs.Screen
+            name={screen.name}
+            component={screen.component}
+            key={screen.name}
+            options={{
+              gestureEnabled: screen.closeOnBackOrGesture,
+            }}
+          />
+        ))}
+      </Tabs.Navigator>
+    </NavigationContainer>
+  );
 }

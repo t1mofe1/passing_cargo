@@ -1,34 +1,42 @@
 {
-	"expo": {
-		"owner": "passingcargo",
-		"name": "Passing Cargo",
-		"slug": "PC",
-		"version": "1.0.0",
-		"orientation": "portrait",
-		"icon": "./assets/images/icon.png",
-		"scheme": "pcargo",
-		"userInterfaceStyle": "automatic",
-		"splash": {
-			"image": "./assets/images/splash.png",
-			"backgroundColor": "#feb237"
-		},
-		"githubUrl": "https://github.com/t1mofe1/passing_cargo",
-		"assetBundlePatterns": ["**/*"],
-		"ios": {
-			"supportsTablet": true,
-			"associatedDomains": ["pcargo.eu"],
-			"bundleIdentifier": "com.passingcargo.PC"
-		},
-		"android": {
-			"adaptiveIcon": {
-				"foregroundImage": "./assets/images/adaptive-icon.png",
-				"backgroundColor": "#000"
-			},
-			"package": "com.passingcargo.PC"
-		},
-		"web": {
-			"favicon": "./assets/images/favicon.png"
-		}
-	},
-	"name": "pc"
+  "expo": {
+    "owner": "passingcargo",
+    "name": "Passing Cargo",
+    "slug": "PC",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "pcargo",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#111",
+    "platforms": ["ios", "android"],
+    "primaryColor": "#feb237",
+    "notification": {
+      "icon": "./assets/images/icon.png",
+      "color": "#feb237"
+    },
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#111"
+    },
+    "githubUrl": "https://github.com/t1mofe1/passing_cargo",
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "associatedDomains": ["pcargo.eu"],
+      "bundleIdentifier": "com.passingcargo.PC"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#111"
+      },
+      "package": "com.passingcargo.PC"
+    },
+    "web": {
+      "favicon": "./assets/images/favicon.png"
+    }
+  },
+  "name": "pcargo"
 }

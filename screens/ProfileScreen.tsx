@@ -1,17 +1,39 @@
-import { Text } from '@/components/ThemedNativeElements';
+import { BottomNavbar } from '@/components/BottomNavbar';
+import {
+  Container1,
+  ProfileInfoContainer,
+  ProfileName,
+  ProfilePicture,
+  ProfileSubText,
+} from '@/components/ProfileScreen';
+import { DriverModeSwitch } from '@/components/ProfileScreen/DriverModeSwitch';
+import { ProfileMenus } from '@/components/ProfileScreen/ProfileMenus';
 import useAuth from '@/hooks/useAuth';
-import { Image, View } from 'react-native';
+import { View } from 'react-native';
 
 export default function ProfileScreen() {
-	const { user } = useAuth();
+  const { user } = useAuth();
 
-	return (
-		<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-			<Image source={{ uri: user?.picture }} style={{ width: 150, height: 150, borderRadius: 150 }} />
-			<Text style={{ marginTop: 20 }}>{user?.id}</Text>
-			<Text style={{ marginTop: 5 }}>
-				{user?.name} | {user?.email}
-			</Text>
-		</View>
-	);
+  return (
+    <>
+      <View
+        style={{ backgroundColor: '#0d0d0d', flex: 1, flexDirection: 'column' }}
+      >
+        <Container1>
+          <ProfilePicture source={{ uri: user?.avatar! }} />
+
+          <ProfileInfoContainer>
+            <ProfileName>
+              {user?.first_name} {user?.last_name}
+            </ProfileName>
+            <ProfileSubText>ID: {user?.id}</ProfileSubText>
+          </ProfileInfoContainer>
+        </Container1>
+        <DriverModeSwitch />
+        <ProfileMenus />
+      </View>
+
+      <BottomNavbar />
+    </>
+  );
 }

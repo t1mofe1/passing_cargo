@@ -1,30 +1,15 @@
-import { Colors } from '@/constants/Colors';
-import { DarkTheme as DefaultDarkTheme, DefaultTheme, Theme as DefaultThemeType } from '@react-navigation/native';
-import { ColorSchemeName as DefaultColorSchemeName } from 'react-native';
+import { colors } from '@/constants/Colors';
 
-export type ColorSchemeName = NonNullable<DefaultColorSchemeName>;
-type ColorsType = DefaultThemeType['colors'] & typeof Colors['dark'] & typeof Colors['light'];
-
-type Theme = DefaultThemeType & {
-	colors: ColorsType;
+const lightTheme = colors;
+const darkTheme = {
+  ...colors,
+  text: colors.background,
+  background: colors.text,
 };
 
-export const LightTheme: Theme = {
-	...DefaultTheme,
-	colors: {
-		...DefaultTheme.colors,
-		...Colors.light,
-	},
-};
-export const DarkTheme: Theme = {
-	...DefaultDarkTheme,
-	colors: {
-		...DefaultDarkTheme.colors,
-		...Colors.dark,
-	},
-};
+export type ColorSchemeName = 'light' | 'dark';
 
-export const Themes: { [key in ColorSchemeName]: Theme } = {
-	light: LightTheme,
-	dark: DarkTheme,
+export const themes = {
+  light: lightTheme,
+  dark: darkTheme,
 };

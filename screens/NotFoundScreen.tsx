@@ -1,39 +1,59 @@
+import { Text } from '@/components/Utils/ThemedNativeElements';
 import useScreens from '@/hooks/useScreens';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 
 export default function NotFoundScreen() {
-	const { navigation, route } = useScreens();
+  const { navigation, route } = useScreens();
 
-	console.log({ route });
+  console.log({ route });
 
-	return (
-		<View style={styles.container}>
-			<Text style={styles.title}>Oops! Seems like you've got in an unknown place.. Try going back maybe?</Text>
-			<TouchableOpacity onPress={() => navigation.open('Home')} style={styles.link}>
-				<Text style={styles.linkText}>Go to home screen!</Text>
-			</TouchableOpacity>
-			<Text>{JSON.stringify(route, null, 2)}</Text>
-		</View>
-	);
+  return (
+    <>
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+          padding: 20,
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 20,
+            fontWeight: 'bold',
+            marginTop: 100,
+          }}
+        >
+          Oops! Seems like you've got in an unknown place..
+        </Text>
+        <TouchableOpacity
+          onPress={() => navigation.open('Home')}
+          style={{
+            marginTop: 50,
+            paddingVertical: 15,
+            paddingHorizontal: 15,
+            borderRadius: 5,
+            backgroundColor: '#1c1c1c',
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 14,
+              color: '#2e78b7',
+            }}
+          >
+            Go to home
+          </Text>
+        </TouchableOpacity>
+        <Text
+          style={{
+            marginTop: 50,
+          }}
+        >
+          For debug: {'\n\n'}
+          {JSON.stringify(route, null, 2)}
+        </Text>
+      </View>
+    </>
+  );
 }
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		alignItems: 'center',
-		justifyContent: 'center',
-		padding: 20,
-	},
-	title: {
-		fontSize: 20,
-		fontWeight: 'bold',
-	},
-	link: {
-		marginTop: 15,
-		paddingVertical: 15,
-	},
-	linkText: {
-		fontSize: 14,
-		color: '#2e78b7',
-	},
-});
